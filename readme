@@ -1,0 +1,142 @@
+项目结构
+  |-- mall
+    |-- node_modules
+    |-- public
+    |-- src
+      |-- assets 【静态资源文件夹】
+        |-- normalize.css 【在github上，用于统一浏览器css样式的】
+        |-- base.css 【自定义的一些统一的初始化样式】
+      |-- components 【存放公共组件】
+        |-- common 【全流程的公共组件，放在任何一个项目中够可以使用的组件文件夹】
+        |-- content 【当前项目中的公共组件，只用于当前项目】
+      |-- views 【存放视图组件，一个模块组件】
+        |-- home
+        |-- classify 
+      |-- router 【路由】
+      |-- store 【vuex】
+      |-- nextwork 【网络数据请求相关】
+        |-- request.js
+      |-- common 【公共的js代码】
+        |-- const.js 【抽取项目公共的常量】
+        |-- utils.js 【公共的方法】
+        |-- 混入.js 【混入】
+    |-- App.vue 【首页组件（默认组件）】
+    |-- main.js 【项目入口文件】
+
+ref属性可以在vue中操作指定的DOM元素或者组件
+  ref给组件绑定的话，this.$refs.ref绑定的值 获取到的就是一个组件对象
+  ref给普通元素绑定的话 this.$refs.ref绑定的值  获取到的就是一个元素节点对象
+
+
+让移动端滚动条更加丝滑:better-scroll
+  https://github.com/ustbhuangyi/better-scroll
+  https://better-scroll.github.io/docs/zh-CN/guide/how-to-install.html#npm
+
+  better-scroll的基本封装：
+    安装：npm install better-scroll --save
+    单独创建一个.vue组件文件
+      引入：import BScroll from 'better-scroll'
+
+    template 
+      div class=box -->展示区域 需要自己传高度
+        div class=content -->包裹需要添加滚动的元素
+          ...被包裹的元素
+
+    script
+      data(){
+        return {
+          scroll:null
+        }
+      }
+      初始化
+        this.scroll= new BScroll("需要滚动的区域",{
+          常用配置参数
+          probeType: 3, //是否需要监听滚动 默认值是0不监测，1也是不监测，2是手指在滚动的过程中进行监测，手指离开后就不监测，3，监测滚动的全过程
+          pullUpLoad: true, //开启滚动条到达底部的事件监听。
+          observeDOM: true,
+          click:true,//允许滚动区域内的按钮被点击
+        })
+
+      监听事件：
+      mounted(){
+        //监听滚动事件，监听滚动到的位置
+        this.scroll.on("scroll",(position)=>{
+          事件处理函数
+          参数position是滚动到的位置{x:,y:}
+        })
+        //监听滚轮是否达到底部
+        this.scroll.on("pullingUp",()=>{
+           //此时 可以可以处理 上拉加载更多 发送ajax请求，
+        })
+      }
+
+    
+上拉加载更多 实现：通过better-scroll 事件的监听
+### 解决首页中可滚动区域的问题
+better-scroll小bug
+  * Better-Scroll在决定有多少区域可以滚动时, 是根据scrollerHeight属性决定
+    * scrollerHeight属性是根据放Better-Scroll的content中的子组件的高度
+    * 但是我们的首页中, 刚开始在计算scrollerHeight属性时, 是没有将图片计算在内的
+    * 所以, 计算出来的告诉是错误的(1300+)
+    * 后来图片加载进来之后有了新的高度, 但是scrollerHeight属性并没有进行更新.
+    * 所以滚动出现了问题
+  * 如何解决这个问题了?
+    * 监听每一张图片是否加载完成, 只要有一张图片加载完成了, 执行一次refresh()
+    * 如何监听图片加载完成了?
+      * 原生的js监听图片: img.onload = function() {}
+      * Vue中监听: @load='方法' 直接给img标签加@load监听事件
+        然后在绑定的方法中通过事件总线的方式传递给需要知道图片加载完成的组件
+        
+    * 调用scroll的refresh()
+
+    可以直接通过scroll的配置参数解决问题
+      observeImage: true, //当检测到图像加载或加载失败时，自动刷新 BetterScroll 的高度。
+      observeDOM: true,
+
+  
+事件总线
+  以前在子组件中是通过this.$emit("自定义事件名称",数据) 发给父组件自定义事件
+  在父组件中通过 <子组件 :自定义事件名称="自定义事件名称"> 
+  使用自定义事件
+    methods:{
+      自定义事件名称(数据){
+        得到子组件传递过来的数据
+      }
+    }
+  但是没有办法跨级发送事件
+
+
+  此时就出现的事件总线，可以跨级发送事件
+    在main.js中，初始化事件总线
+      Vue.prototype.$bus=new Vue()
+    组件a中发去事件：
+      this.$bus.$emit("自定义事件名称"，数据)
+
+    b组件中监听事件：
+      this.$bus.$on("自定义事件名称",()=>{
+        自定义事件名称回调函数
+      })
+
+    b组件销毁的时候可以取消监听事件
+     this.$bus.$off("自定义事件名称",监听的函数)
+
+防抖节流：避免短时间内多次向服务器发送请求，或者是对页面的操作，
+  可以减轻压力
+
+
+将vuex中的getter中的方法引入到计算属性中
+在getter中定义方法
+在组件中使用:
+  1.需要导入
+    import { mapGetters } from "vuex"; //将getter中导入到计算属性中
+  2.引入：
+    computed:{
+    ...mapGetters({
+          键是别名 值是getter中定义的方法名
+          len: "goodsCarLength",
+        }),
+    }
+
+  3.使用:
+    使用方式与计算属性一样,直接使用键别名使用
+   
