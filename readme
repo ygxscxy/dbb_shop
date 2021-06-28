@@ -1,3 +1,6 @@
+如果要监听组件的点击需要加修饰符
+  @click.active="事件"
+
 项目结构
   |-- mall
     |-- node_modules
@@ -124,7 +127,7 @@ better-scroll小bug
   可以减轻压力
 
 
-将vuex中的getter中的方法引入到计算属性中
+将vuex中的getter中的方法映射到组件中(组件的计算属性中)
 在getter中定义方法
 在组件中使用:
   1.需要导入
@@ -139,4 +142,45 @@ better-scroll小bug
 
   3.使用:
     使用方式与计算属性一样,直接使用键别名使用
-   
+    在模板中通过{{别名}}直接进行调用
+    在普通的方法脚本中通过this.别名的方式进行调用
+
+将active中的方法映射到组件中
+  1。导入包
+  import {mapActive} from "vuex"
+  2.映射
+  methdos:{
+    ...mapActive({
+        键是别名 值是getter中定义的方法名
+        别名: "active中的方法",
+      }),
+  }
+
+  3.使用
+    在普通的方法脚本中通过this.别名的方式进行调用
+
+弹窗Toast
+
+
+解决移动端点击300ms延迟问题
+  安装：
+  npm install fastclick -S
+  引入：
+  import FastClick from "fastclick"
+  
+  FastClick.attach(document.body)
+
+图片懒加载：
+  懒加载：用到时再加载，图片显示再视口上，再进行加载
+  npm i vue-lazyload -S
+  在main.js中使用
+  import VueLazyLoad from "vue-lazyload"
+  Vue.use(VueLazyLoad,{
+    图片没有加载出来的时候用那张图片代替
+    loading:import("路径")//在js中导入静态文件
+  })
+
+  使用
+    <img v-lazy="地址" />
+
+

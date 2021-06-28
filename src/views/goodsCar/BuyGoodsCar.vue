@@ -59,6 +59,6 @@ export default {
   top: 44px;
   left: 0;
   right: 0;
-  bottom: 49px;
+  bottom: 79px;
 }
 </style>

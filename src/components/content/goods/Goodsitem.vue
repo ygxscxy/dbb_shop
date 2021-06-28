@@ -2,11 +2,14 @@
   <div class="goods-item flex j-c-s-b" @click="clickGoodsItem">
     <div class="flex j-c-c">
       <!-- @load="imgLoad"加你他那个当前图片是否加载完成，如果加载完成，就执行后面的回调函数imgLoad函数 -->
-      <img :src="showImg" alt="" @load="imgLoad" />
+      <!-- <img :src="showImg" alt="" @load="imgLoad" /> -->
+      <a v-if="goodsitem.link" :href="goodsitem.link">
+        <img v-lazy="showImg" alt="" @load="imgLoad" />
+      </a>
     </div>
     <div>
       <p class="goods-item-title">{{ goodsitem.title }}</p>
-      <p class="price-cfav">
+      <p class="price-cfav" v-if="goodsitem.price || goodsitem.cfav">
         <span class="goods-item-price">￥{{ goodsitem.price }}</span>
         <span class="goods-item-cfav-num flex a-c">
           <img src="~assets/image/home/收藏.png" alt="" />
@@ -77,6 +80,7 @@ export default {
   overflow: hidden;
   padding: 10px 0;
   margin-bottom: 20px;
+  text-align: center;
 }
 .goods-item-price {
   font-size: 12px;

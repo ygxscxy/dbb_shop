@@ -4,13 +4,9 @@
       <span>用户评价</span>
       <span>更多</span>
     </div>
-    <div>
+    <div v-if="commentInfo[0].user != undefined">
       <div class="user-icon-name flex a-c">
-        <img
-          v-if="commentInfo[0].user.avatar"
-          :src="commentInfo[0].user.avatar"
-          alt=""
-        />
+        <img :src="commentInfo[0].user.avatar" alt="" />
         <span>{{ commentInfo[0].user.uname }}</span>
       </div>
       <div class="comment-content">

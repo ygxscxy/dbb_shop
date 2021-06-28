@@ -1,13 +1,14 @@
 <template>
   <div class="settlement">
-    <label @click="checkboxClick">
-      <input
-        type="checkbox"
-        :checked="isSelect"
-        class="settlement-checkbox"
-        value="√"
-      />&nbsp;全选
-    </label>
+    <input
+      type="checkbox"
+      class="settlement-checkbox"
+      value="√"
+      id="checkbox"
+      :checked="isAllSelect"
+      @click="checkedCkick"
+    />
+    <label for="checkbox">全选 </label>
     &nbsp;&nbsp;
     <span>合计:￥{{ totalPrice }}</span>
     <span class="go-buy" @click="goBuy">去结算({{ selectGoodsCount }})</span>
@@ -19,12 +20,11 @@ import { mapGetters } from "vuex";
 export default {
   data() {
     return {
-      isSelect: true,
+      isSelect: false,
     };
   },
   methods: {
     goBuy() {
-      console.log("aa");
       this.total();
     },
     total() {
@@ -36,20 +36,29 @@ export default {
           return pervVal + parseFloat(newVal.goodsPrice) * newVal.count;
         }, 0);
     },
-    checkboxClick() {
-      this.$store.commit("allSelectGoods", { isSelect: this.isSelect });
+    checkedCkick() {
+      // 判断是否全部选中
+      let tag = !this.isAllSelect;
+      this.$store.commit("allSelectGoods", tag);
     },
   },
   computed: {
     ...mapGetters({
       len: "goodsCarLength",
+      getGoodsCars: "getGoodsCars",
     }),
     totalPrice() {
-      return this.total();
+      return Math.floor(this.total() * 100) / 100;
+    },
+    isAllSelect() {
+      if (this.$store.state.buyCars.length === 0) return false;
+      return !this.$store.state.buyCars.find((res) => {
+        return res.isGoodsActive == false;
+      });
     },
 
     selectGoodsCount() {
-      return this.$store.state.buyCars.filter((val) => {
+      return this.getGoodsCars.filter((val) => {
         return val.isGoodsActive;
       }).length;
     },

@@ -41,8 +41,19 @@ export default {
 
   // 全选与反全选
   allSelectGoods(state, payload) {
-
-
+    if (payload) {
+      let buyCars = state.buyCars.map((val) => {
+        val.isGoodsActive = true
+        return val
+      })
+      state.buyCars = buyCars
+    } else {
+      let buyCars = state.buyCars.map((val) => {
+        val.isGoodsActive = false
+        return val
+      })
+      state.buyCars = buyCars
+    }
   },
 
 

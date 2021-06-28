@@ -33,6 +33,7 @@
       v-show="isShowBackBtn"
     ></back-top-btn>
     <detail-bottom-bar @addBuyCarClick="addBuyCarClick"></detail-bottom-bar>
+    <!-- <toast :msg="msg" :isShow="isShow"></toast> -->
   </div>
 </template>
 
@@ -49,6 +50,7 @@ import DetailBottomBar from "./detailChild/DetailBottomBar.vue";
 
 import Scroll from "components/common/scroll/Scroll.vue";
 
+import { mapActions } from "vuex";
 import {
   getDetailData,
   GoodsDetailInfo,
@@ -58,6 +60,9 @@ import {
 } from "network/detail.js";
 
 import { backBtn } from "mixins/mixin.js";
+
+import Toast from "components/common/toast/Toast.vue";
+
 export default {
   name: "Detail",
   mixins: [backBtn],
@@ -88,6 +93,7 @@ export default {
     DetailUserComment,
     GoodsList,
     DetailBottomBar,
+    Toast,
   },
   created() {
     // 每一个商品都对应一个商品id
@@ -145,6 +151,10 @@ export default {
     });
   },
   methods: {
+    ...mapActions({
+      setBuyCar: "setBuyCar",
+    }),
+
     activeClick(index) {
       // 点击了标题,就滚动到指定的位置
       this.$refs.scr.scrollToEnc(0, -this.themeToY[index], 100);
@@ -213,7 +223,22 @@ export default {
       // 保存当前商品的加入购物车的数量
       buyCar.count = 1;
       // this.$store.commit("setBuyCar", { buyCar: buyCar });
-      this.$store.dispatch("setBuyCar", { buyCar: buyCar });
+      /* this.$store.dispatch("setBuyCar", { buyCar: buyCar }).then((res) => {
+        console.log(res);
+      }); */
+      this.setBuyCar({ buyCar: buyCar }).then((res) => {
+        // this.msg = res;
+        // this.isShow = true;
+        // setTimeout(() => {
+        //   this.msg = "";
+        //   this.isShow = false;
+        // }, 1500);
+
+        // console.log(this.$toast.methods.show);
+        // this.$toast.show(res);
+        this.$toast.show(res); //调用弹窗
+        // console.log(this.$toast);
+      });
     },
   },
 

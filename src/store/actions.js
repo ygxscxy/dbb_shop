@@ -15,21 +15,30 @@ const actions = {
       }
     }
   } */
+  // 添加商品到购物车
   setBuyCar(context, payload) {
-    if (context.rootState.buyCars.length == 0) {
-      context.commit("setBuyCar", payload.buyCar)
-    } else {
-      let newArr = context.rootState.buyCars.filter((val) => {
-        if (val.iid == payload.buyCar.iid) {
-          return true
-        }
-      })
-      if (newArr.length != 0) {
-        context.commit("addCount", newArr[0])
-      } else {
+    // 如果在vuex中完成了某个操作，想让外界知道，就可以使用Promise将结果返回出去，通过dispatch函数.then进行接收
+    return new Promise((resolve, reject) => {
+      if (context.rootState.buyCars.length == 0) {
+        resolve("添加购物车成功~")
         context.commit("setBuyCar", payload.buyCar)
+      } else {
+        let newArr = context.rootState.buyCars.filter((val) => {
+          if (val.iid == payload.buyCar.iid) {
+            return true
+          }
+        })
+        if (newArr.length != 0) {
+          resolve("此商品已存在购物车,商品数量+1~")
+          context.commit("addCount", newArr[0])
+
+        } else {
+          resolve("添加购物车成功~")
+          context.commit("setBuyCar", payload.buyCar)
+        }
       }
-    }
+    })
+
   }
 
 }

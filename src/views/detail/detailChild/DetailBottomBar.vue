@@ -30,7 +30,6 @@
 export default {
   methods: {
     addBuyCarClick() {
-      console.log("addBuyCarClick");
       this.$emit("addBuyCarClick");
     },
   },
